@@ -1,0 +1,9 @@
+# Folder
+/sources/
+/work_dir/
+/data/
+/local/
+
+# Files
+*.pyc
+*.pt
