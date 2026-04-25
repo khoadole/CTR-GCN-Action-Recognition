@@ -1,8 +1,8 @@
 # Folder
 /sources/
 /work_dir/
-/data/
 /local/
+/data/csv/
 
 # Files
 *.pyc
