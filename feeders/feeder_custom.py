@@ -16,6 +16,8 @@ class Feeder(Dataset):
         random_shift=False,
         random_move=False,
         random_rot=False,
+        random_flip=False,
+        random_view_aug=False,
         window_size=-1,
         normalization=False,
         debug=False,
@@ -34,6 +36,8 @@ class Feeder(Dataset):
         self.normalization = normalization
         self.p_interval = p_interval
         self.random_rot = random_rot
+        self.random_flip = random_flip
+        self.random_view_aug = random_view_aug
         self.bone = bone
         self.vel = vel
         self.num_point = num_point
@@ -116,8 +120,16 @@ class Feeder(Dataset):
         valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0)
         data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
 
+        if self.random_flip and np.random.random() < 0.5:
+            # Negate x only — consistent with LE2I _flip.avi convention where YOLO
+            # keeps anatomical joint labels on mirrored frames (no index swap needed).
+            data_numpy[0] = -data_numpy[0]
+
         if self.random_rot:
             data_numpy = tools.random_rot(data_numpy)
+
+        if self.random_view_aug and np.random.random() < 0.5:
+            data_numpy = tools.random_view_aug_2d(data_numpy)
 
         if self.bone:
             if self.num_point == 25:

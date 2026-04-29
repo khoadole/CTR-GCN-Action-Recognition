@@ -191,6 +191,30 @@ def random_rot(data_numpy, theta=0.3):
 
     return data_torch
 
+def random_view_aug_2d(data_numpy, y_scale_range=(0.3, 1.0), angle_range=(-np.pi / 2, np.pi / 2)):
+    """Simulate diverse camera elevation angles on hip-centered 2D skeleton.
+
+    Compresses Y to mimic top-down views, then rotates in the image plane.
+    Only modifies (x, y) channels — confidence (channel 2) is untouched.
+    data_numpy: (C, T, V, M)  C = [x, y, conf], hip-centered around 0.
+    """
+   out = data_numpy.clone() if isinstance(data_numpy, torch.Tensor) else data_numpy.copy()
+
+    # Y-axis compression: simulate camera looking down (top-down → sy ≈ 0.3)
+    sy = np.random.uniform(*y_scale_range)
+    out[1] = out[1] * sy
+
+    # In-plane 2D rotation: simulate camera orientation around vertical axis
+    theta = np.random.uniform(*angle_range)
+    cos_t, sin_t = float(np.cos(theta)), float(np.sin(theta))
+    x_rot = cos_t * out[0] - sin_t * out[1]
+    y_rot = sin_t * out[0] + cos_t * out[1]
+    out[0] = x_rot
+    out[1] = y_rot
+
+    return out
+
+
 def openpose_match(data_numpy):
     C, T, V, M = data_numpy.shape
     assert (C == 3)
