@@ -257,7 +257,8 @@ def process_video(
                     kpts_norm[:, 0] /= orig_w
                     kpts_norm[:, 1] /= orig_h
                     if not is_valid_kpt(kpts_norm, min_kpt_conf):
-                        kpts_norm[:] = 0.0
+                        continue
+                        # kpts_norm[:] = 0.0
 
                     if tid not in tracks:
                         tracks[tid] = TrackState(window_size)
