@@ -17,11 +17,7 @@ model_args:
 
 # Path to the trained .pt checkpoint
 # Override at runtime with: --weights /path/to/runs-XX-YY.pt
-# /home/khoa/cxview/aicv_platform_2026_04_8_v2/assets/local/ctrgcn/output/runs-37-108003.pt
-# runs-36-105084
-# /home/khoa/cxview/aicv_platform_2026_04_8_v2/CTR-GCN/work_dir/custom/coco17_8class_v4/runs-3-8757.pt
-# 
-weights: /home/khoa/cxview/aicv_platform_2026_04_8_v2/assets/local/ctrgcn/output/runs-1-2922_finetune.pt
+weights: /home/khoa/GitHub/CTR-GCN-Action-Recognition/work_dir/custom/coco17_8class_v4/joint/runs-3-8757.pt
 
 # ── Input / Output ────────────────────────────────────────────────────────────
 # input: single video file, or a folder of videos (mp4/avi/mov/mkv...)
@@ -29,17 +25,9 @@ weights: /home/khoa/cxview/aicv_platform_2026_04_8_v2/assets/local/ctrgcn/output
 #   - if input is a file   → output_dir/filename_annotated.mp4
 #   - if input is a folder → output_dir/<same filename>_annotated.mp4 for each video
 # Both can be overridden at runtime with --input / --output
-# fall_4corner.mp4
-# BOKA : 
-# boka_gap_nguoi.avi          boka_kho_group.avi     boka_walking_2.avi
-# boka_kho_edge_bottom.avi    boka_kho_walkleft.avi
-# boka_kho_edge_bottom_2.avi  boka_walking_1.avi
-
-# MAROU
-# cam4_cashier.mp4  cam4_marou_lyingdown.mp4  marou_cashier.mp4
 
 input: /home/khoa/cxview/video_stream/BOKA/hard_case/catin_test.avi
-output_dir: ./sources
+output_dir: ./sources/OUTPUT/AUG
 
 # ── Class names (must match training CLASS_NAMES order / label id) ─────────────
 class_names:
@@ -64,7 +52,8 @@ device: "0"
 # ── YOLO pose detector ────────────────────────────────────────────────────────
 yolo_model: yolo11m-pose.pt        # path to YOLO weights
 yolo_imgsz: 640                    # inference image size
-min_kpt_conf: 0.05                 # minimum keypoint confidence (same as extract scripts)
+min_kpt_conf: 0.8                 # minimum keypoint confidence (same as extract scripts)
+min_valid_kpts: 12                 # frame skipped from buffer if fewer than N kpts are valid (0 = disabled)
 
 # ByteTrack config — "bytetrack.yaml" ships with ultralytics
 # You can also use "botsort.yaml"

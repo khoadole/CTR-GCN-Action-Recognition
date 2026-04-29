@@ -196,11 +196,12 @@ def process_video(
     device: torch.device,
     show: bool,
 ) -> None:
-    window_size  = int(cfg.get("window_size", 36))
-    class_names  = cfg["class_names"]
-    yolo_imgsz   = int(cfg.get("yolo_imgsz", 640))
-    min_kpt_conf = float(cfg.get("min_kpt_conf", 0.05))
-    tracker_cfg  = cfg.get("tracker", "bytetrack.yaml")
+    window_size    = int(cfg.get("window_size", 36))
+    class_names    = cfg["class_names"]
+    yolo_imgsz     = int(cfg.get("yolo_imgsz", 640))
+    min_kpt_conf   = float(cfg.get("min_kpt_conf", 0.05))
+    min_valid_kpts = int(cfg.get("min_valid_kpts", 0))
+    tracker_cfg    = cfg.get("tracker", "bytetrack.yaml")
 
     cap = cv2.VideoCapture(input_path)
     if not cap.isOpened():
@@ -256,9 +257,10 @@ def process_video(
                     kpts_norm = kpts_data[pidx].copy().astype(np.float32)
                     kpts_norm[:, 0] /= orig_w
                     kpts_norm[:, 1] /= orig_h
+                    if min_valid_kpts > 0 and int((kpts_norm[:, 2] >= min_kpt_conf).sum()) < min_valid_kpts:
+                        continue
                     if not is_valid_kpt(kpts_norm, min_kpt_conf):
                         continue
-                        # kpts_norm[:] = 0.0
 
                     if tid not in tracks:
                         tracks[tid] = TrackState(window_size)
